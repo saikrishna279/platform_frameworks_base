@@ -1250,6 +1250,11 @@ public interface WindowManagerPolicy {
     public boolean navigationBarCanMove();
 
     /**
+     * Specifies whether the device needs a navigation bar (because it has no hardware buttons)
+     */
+    public boolean needsNavigationBar();
+
+    /**
      * Lock the device now.
      */
     public void lockNow(Bundle options);
