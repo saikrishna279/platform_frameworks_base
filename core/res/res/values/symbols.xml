@@ -2441,5 +2441,8 @@
   <java-symbol type="bool" name="config_zero_balance_operator"/>
   <java-symbol type="bool" name="config_passpoint_setting_on" />
   <java-symbol type="bool" name="config_useSystemClockforSensors" />
+
+    <!-- Gesture Sensor -->
+    <java-symbol type="bool" name="config_enableGestureService" />
 </resources>
  
