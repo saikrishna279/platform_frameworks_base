@@ -145,6 +145,4 @@
     <string name="action_save_success">Saved</string>
     <string name="action_save_fault">Saving was unsuccessful</string>
     <string name="action_edit">Edit</string>
-=======
->>>>>>> parent of d5b0360... Hardware key custom rebinding (1/2)
 </resources>
