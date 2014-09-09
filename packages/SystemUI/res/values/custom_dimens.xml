@@ -44,4 +44,7 @@
     <dimen name="button_height">40dp</dimen>
     <dimen name="crop_buttons">48dp</dimen>
     <dimen name="crop_buttons_inlet">32dp</dimen>
+
+    <!-- The task item height in task list. -->
+    <dimen name="task_manager_item_height">40dip</dimen>
 </resources>
