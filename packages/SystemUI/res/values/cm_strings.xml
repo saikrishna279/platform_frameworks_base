@@ -24,4 +24,7 @@
     <!-- Path data for circle battery -->
     <string name="battery_circle_full" translatable="false">M12,12m-10,0a10,10 0,1 1,20 0a10,10 0,1 1,-20 0</string>
     <string name="battery_circle_empty" translatable="false">M12,12m0,0a0,0 0,1 1,0 0a0,0 0,1 1,0 0</string>
+    <!-- The text for the button in the notification window-shade that clears
+         all of the currently visible notifications. [CHAR LIMIT=10]-->
+    <string name="clear_recents">Close all recent</string>
 </resources>
