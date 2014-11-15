@@ -3876,6 +3876,13 @@ public final class Settings {
          * @hide
          */
         public static final String SHOW_CHARGING_MAH = "show_charging_mah";
+
+        /**
+         * Whether newly installed apps should run with privacy guard by default
+         * @hide
+         */
+        public static final String PRIVACY_GUARD_DEFAULT = "privacy_guard_default";
+
         /**
          * show the membar in recents
          *  @hide
@@ -9107,6 +9114,7 @@ public final class Settings {
          * The order in which the bookmark should be displayed
          * <P>Type: INTEGER</P>
          */
+
         public static final String ORDERING = "ordering";
 
         private static final String[] sIntentProjection = { INTENT };
