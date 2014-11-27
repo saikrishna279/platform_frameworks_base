@@ -15,8 +15,6 @@
  */
 package com.android.systemui.tuner;
 
-import static com.android.systemui.BatteryMeterView.SHOW_PERCENT_SETTING;
-
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
@@ -62,8 +60,6 @@ public class TunerFragment extends PreferenceFragment {
     public void onResume() {
         super.onResume();
         updateBatteryPct();
-        getContext().getContentResolver().registerContentObserver(
-                System.getUriFor(SHOW_PERCENT_SETTING), false, mSettingObserver);
 
         registerPrefs(getPreferenceScreen());
         MetricsLogger.visibility(getContext(), MetricsLogger.TUNER, true);
@@ -116,8 +112,6 @@ public class TunerFragment extends PreferenceFragment {
 
     private void updateBatteryPct() {
         mBatteryPct.setOnPreferenceChangeListener(null);
-        mBatteryPct.setChecked(System.getInt(getContext().getContentResolver(),
-                SHOW_PERCENT_SETTING, 0) != 0);
         mBatteryPct.setOnPreferenceChangeListener(mBatteryPctChange);
     }
 
@@ -138,7 +132,6 @@ public class TunerFragment extends PreferenceFragment {
         public boolean onPreferenceChange(Preference preference, Object newValue) {
             final boolean v = (Boolean) newValue;
             MetricsLogger.action(getContext(), MetricsLogger.TUNER_BATTERY_PERCENTAGE, v);
-            System.putInt(getContext().getContentResolver(), SHOW_PERCENT_SETTING, v ? 1 : 0);
             return true;
         }
     };
