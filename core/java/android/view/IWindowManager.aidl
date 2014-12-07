@@ -240,6 +240,7 @@ interface IWindowManager
      * Device has a software navigation bar (separate from the status bar).
      */
     boolean hasNavigationBar();
+    boolean hasPermanentMenuKey();
 
     /**
      * Navigation bar window is currently capable of being vertical
