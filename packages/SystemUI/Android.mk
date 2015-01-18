@@ -10,6 +10,7 @@ LOCAL_SRC_FILES += $(call all-java-files-under, ../../../../packages/apps/DUI/sr
 
 LOCAL_STATIC_JAVA_LIBRARIES := Keyguard \
     android-support-v7-palette \
+    android-support-v4 \
     trail-drawing \
     rebound
 
