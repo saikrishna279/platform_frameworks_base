@@ -2461,6 +2461,10 @@
 
     <bool name="config_enableDataSwitch">false</bool>
 
+    <!-- The list of components which should be forced to be enabled. -->
+    <string-array name="config_forceEnabledComponents" translatable="false">
+    </string-array>
+
     <!-- Whether to use TMO MCC MNC roaming setting -->
     <bool name="config_regional_mcc_mnc_roaming_setting">false</bool>
 
