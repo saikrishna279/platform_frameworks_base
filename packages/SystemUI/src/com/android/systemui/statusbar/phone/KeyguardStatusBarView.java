@@ -30,6 +30,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.systemui.BatteryLevelTextView;
+import com.android.keyguard.CarrierText;
+
 import com.android.systemui.BatteryMeterView;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.policy.BatteryController;
@@ -45,7 +47,7 @@ public class KeyguardStatusBarView extends RelativeLayout {
 
     private boolean mKeyguardUserSwitcherShowing;
 
-    private TextView mCarrierLabel;
+    private CarrierText mCarrierLabel;
     private View mSystemIconsSuperContainer;
     private MultiUserSwitch mMultiUserSwitch;
     private ImageView mMultiUserAvatar;
@@ -72,7 +74,7 @@ public class KeyguardStatusBarView extends RelativeLayout {
         mMultiUserAvatar = (ImageView) findViewById(R.id.multi_user_avatar);
         mBatteryMeter = (BatteryMeterView) findViewById(R.id.battery);
         mBatteryLevel = (BatteryLevelTextView) findViewById(R.id.battery_level_text);
-        mCarrierLabel = (TextView) findViewById(R.id.keyguard_carrier_text);
+        mCarrierLabel = (CarrierText) findViewById(R.id.keyguard_carrier_text);
         loadDimens();
         mFastOutSlowInInterpolator = AnimationUtils.loadInterpolator(getContext(),
                 android.R.interpolator.fast_out_slow_in);
@@ -224,5 +226,18 @@ public class KeyguardStatusBarView extends RelativeLayout {
     @Override
     public boolean hasOverlappingRendering() {
         return false;
+    }
+
+    public void updateCarrierLabel() {
+        mCarrierLabel.updateCarrierLabelSettings();
+        mCarrierLabel.updateCarrierText();
+    }
+
+    public void setCarrierLabelVisibility(boolean show) {
+        mCarrierLabel.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    public void updateCarrierLabelColor() {
+        mCarrierLabel.updateColor(false);
     }
 }
