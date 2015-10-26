@@ -1859,7 +1859,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
 
         // apply user lockscreen image
-        if (mMediaMetadata == null && backdropBitmap == null) {
+        if (backdropBitmap == null) {
             WallpaperManager wm = (WallpaperManager)
                     mContext.getSystemService(Context.WALLPAPER_SERVICE);
             if (wm != null) {
@@ -1871,9 +1871,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mKeyguardShowingMedia = hasBackdrop;
 
         if ((hasBackdrop || DEBUG_MEDIA_FAKE_ARTWORK)
-                && (mState == StatusBarState.KEYGUARD || mState == StatusBarState.SHADE_LOCKED)
-                && mFingerprintUnlockController.getMode()
-                        != FingerprintUnlockController.MODE_WAKE_AND_UNLOCK_PULSING) {
+                && (mState == StatusBarState.KEYGUARD || mState == StatusBarState.SHADE_LOCKED)) {
             // time to show some art!
             if (mBackdrop.getVisibility() != View.VISIBLE) {
                 mBackdrop.setVisibility(View.VISIBLE);
@@ -2107,6 +2105,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         return mLeaveOpenOnKeyguardHide;
     }
 
+    public boolean isKeyguardShowingMedia() {
+        return mKeyguardShowingMedia;
+    }
+
     public boolean isQsExpanded() {
         return mNotificationPanel.isQsExpanded();
     }
@@ -2210,10 +2212,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         } else {
             updateNotificationRanking(null);
         }
-    }
-
-    public boolean isKeyguardShowingMedia() {
-        return mKeyguardShowingMedia;
     }
 
     protected void updateHeadsUp(String key, Entry entry, boolean shouldInterrupt,
