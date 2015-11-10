@@ -293,6 +293,9 @@ public class AssistManager {
 
     private void updateAssistInfo() {
         mAssistComponent = mAssistUtils.getAssistComponentForUser(UserHandle.USER_CURRENT);
+        if (mView == null) {
+            onConfigurationChanged();
+        }
     }
 
     public void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
