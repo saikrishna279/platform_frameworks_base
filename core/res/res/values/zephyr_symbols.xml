@@ -134,5 +134,8 @@
 
   <!-- Default name of the custom carrier label -->
   <java-symbol type="string" name="default_custom_label" />
+
+  <!-- vendor -->
+  <java-symbol type="string" name="system_error_vendorprint" />
 </resources>
 
