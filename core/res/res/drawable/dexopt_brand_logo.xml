@@ -14,15 +14,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
-<resources>
-    <!-- Boot dexopt layout -->
-    <color name="dexopt_background">#000</color>
-    <color name="dexopt_text">#fff</color>
 
-    <!-- Layouts -->
-    <color name="notification_mtrl_action_textcolor">@color/secondary_text_material_light</color>
-    <color name="notification_mtrl_big_picture_bg">#CCEEEEEE</color>
-    <color name="resolver_list_bg">@color/white</color>
-    <color name="chooser_grid_bg">@color/white</color>
-    <color name="app_permission_icon_tint">@android:color/black</color>
-</resources>
+<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
+    android:src="@drawable/logo_zephyr" />
