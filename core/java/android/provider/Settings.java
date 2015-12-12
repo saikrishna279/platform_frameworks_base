@@ -6369,6 +6369,12 @@ public final class Settings {
         public static final String QS_USE_FOUR_COLUMNS = "qs_use_four_columns";
 
         /**
+         * List of QS tile names
+         * @hide
+         */
+        public static final String QS_TILES = "sysui_qs_tiles";
+
+        /**
          * Whether the camera launch gesture should be disabled.
          *
          * @hide
@@ -6557,7 +6563,7 @@ public final class Settings {
          */
         public static final String POWER_MENU_ACTIONS = "power_menu_actions";
 
-        /**
+        /*
          * This are the settings to be backed up.
          *
          * NOTE: Settings are backed up and restored in the order they appear
