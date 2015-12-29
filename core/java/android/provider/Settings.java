@@ -3886,12 +3886,6 @@ public final class Settings {
         public static final String SHOW_CHARGING_MAH = "show_charging_mah";
 
         /**
-         * Whether newly installed apps should run with privacy guard by default
-         * @hide
-         */
-        public static final String PRIVACY_GUARD_DEFAULT = "privacy_guard_default";
-
-        /**
          * show the membar in recents
          *  @hide
          */
@@ -9453,6 +9447,12 @@ public final class Settings {
         public static boolean putBooleanForUser(ContentResolver cr, String name, boolean value, int userHandle) {
             return putStringForUser(cr, name, value ? "1" : "0", userHandle);
         }
+
+        /**
+         * Whether newly installed apps should run with privacy guard by default
+         * @hide
+         */
+        public static final String PRIVACY_GUARD_DEFAULT = "privacy_guard_default";
 
     }
 
