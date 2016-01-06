@@ -921,12 +921,12 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
                 default:
                     break;
             }
-        }
 
             mShowBatteryTextExpanded = showExpandedBatteryPercentage;
             updateVisibilities();
             requestCaptureValues();
         }
+    }
 
     private void doUpdateStatusBarCustomHeader(final Drawable next, final boolean force) {
         if (next != null) {
