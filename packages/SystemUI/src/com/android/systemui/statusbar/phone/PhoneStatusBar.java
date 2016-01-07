@@ -85,6 +85,7 @@ import android.util.ArraySet;
 import android.util.DisplayMetrics;
 import android.util.EventLog;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -94,9 +95,11 @@ import android.view.ThreadedRenderer;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.WindowManagerGlobal;
 import android.view.accessibility.AccessibilityEvent;
@@ -156,6 +159,7 @@ import com.android.systemui.statusbar.NotificationOverflowContainer;
 import com.android.systemui.statusbar.ScrimView;
 import com.android.systemui.statusbar.SignalClusterView;
 import com.android.systemui.statusbar.SpeedBumpView;
+import com.android.systemui.statusbar.StatusBarIconView;
 import com.android.systemui.statusbar.StatusBarState;
 import com.android.systemui.statusbar.VisualizerView;
 import com.android.systemui.statusbar.phone.UnlockMethodCache.OnUnlockMethodChangedListener;
@@ -215,7 +219,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         DragDownHelper.DragDownCallback, ActivityStarter, OnUnlockMethodChangedListener,
         HeadsUpManager.OnHeadsUpChangedListener {
     static final String TAG = "PhoneStatusBar";
-    public static final boolean DEBUG = BaseStatusBar.DEBUG;
+    public static final boolean DEBUG = true;
     public static final boolean SPEW = false;
     public static final boolean DUMPTRUCK = false; // extra dumpsys info
     public static final boolean DEBUG_GESTURES = false;
@@ -333,6 +337,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private boolean mWakeUpComingFromTouch;
     private PointF mWakeUpTouchLocation;
     private boolean mScreenTurningOn;
+
+    private int mUiMode;
+    private int mAssetSeq;
 
     int mPixelFormat;
     Object mQueueLock = new Object();
@@ -733,6 +740,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private PowerManager.WakeLock mGestureWakeLock;
     private Vibrator mVibrator;
 
+    // User for recreating status bar on theme change
+    private boolean mRecreating = false;
+
     // Fingerprint (as computed by getLoggingFingerprint() of the last logged state.
     private int mLastLoggedStateFingerprint;
 
@@ -997,7 +1007,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         try {
             boolean showNav = mWindowManagerService.hasNavigationBar();
             if (DEBUG) Log.v(TAG, "hasNavigationBar=" + showNav);
-            if (showNav) {
+            if (showNav && !mRecreating) {
                 mNavigationBarView = mNavigationController.getNavigationBarView(mContext);
                 mNavigationBarView.setDisabledFlags(mDisabled1);
             }
@@ -1010,9 +1020,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         // figure out which pixel-format to use for the status bar.
         mPixelFormat = PixelFormat.OPAQUE;
 
-        if (mContext.getResources().getBoolean(R.bool.enable_operator_name)) {
-            mCarrierText = mStatusBarView.findViewById(R.id.status_carrier_text);
-        }
+        mCarrierText = mStatusBarView.findViewById(R.id.status_carrier_text);
 
         mStackScroller = (NotificationStackScrollLayout) mStatusBarWindowContent.findViewById(
                 R.id.notification_stack_scroller);
@@ -1535,6 +1543,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         if (mNavigationBarView != null) {
             mNavigationBarView.getBaseView().setLayoutDirection(layoutDirection);
         }
+        mIconController.refreshAllStatusBarIcons();
     }
 
     private void updateNotificationShade() {
@@ -3441,6 +3450,15 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mIconController.updateResources();
         mScreenPinningRequest.onConfigurationChanged();
         mNetworkController.onConfigurationChanged();
+
+        if (mUiMode != newConfig.uiMode) {
+            mUiMode = newConfig.uiMode;
+            recreateStatusBar();
+        }
+        if (mAssetSeq != newConfig.assetSeq) {
+            mAssetSeq = newConfig.assetSeq;
+            recreateStatusBar();
+        }
     }
 
     @Override
@@ -3479,6 +3497,137 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mContext.getContentResolver().registerContentObserver(
                 Settings.Secure.getUriFor(Settings.Secure.USER_SETUP_COMPLETE), true,
                 mUserSetupObserver, mCurrentUserId);
+    }
+
+    private static void copyNotifications(ArrayList<Pair<String, StatusBarNotification>> dest,
+            NotificationData source) {
+        int N = source.size();
+        for (int i = 0; i < N; i++) {
+            NotificationData.Entry entry = source.get(i);
+            dest.add(Pair.create(entry.key, entry.notification));
+        }
+    }
+
+    private void removeSignalCallbacks(NetworkController networkController) {
+        final SignalClusterView signalCluster =
+                (SignalClusterView) mStatusBarView.findViewById(R.id.signal_cluster);
+        final SignalClusterView signalClusterKeyguard =
+                (SignalClusterView) mKeyguardStatusBar.findViewById(R.id.signal_cluster);
+        final SignalClusterView signalClusterQs =
+                (SignalClusterView) mHeader.findViewById(R.id.signal_cluster);
+        networkController.removeSignalCallback(signalCluster);
+        networkController.removeSignalCallback(signalClusterKeyguard);
+        networkController.removeSignalCallback(signalClusterQs);
+
+        if (signalCluster != null) signalCluster.setSecurityController(null);
+        if (signalClusterKeyguard != null) signalClusterKeyguard.setSecurityController(null);
+        if (signalClusterQs != null) signalClusterQs.setSecurityController(null);
+    }
+
+    private void recreateStatusBar() {
+        mRecreating = true;
+
+        if (mNetworkController != null) {
+            removeSignalCallbacks(mNetworkController);
+            if (mNetworkController.hasVoiceCallingFeature()) {
+                mNetworkController.removeEmergencyListener(mHeader);
+            }
+        }
+
+        if (mIconController != null) {
+            mIconController.cleanup();
+        }
+        if (mKeyguardIndicationController != null) {
+            mKeyguardIndicationController.cleanup();
+        }
+
+        mStatusBarWindow.removeContent(mStatusBarWindowContent);
+        mStatusBarWindow.clearDisappearingChildren();
+
+        // extract icons from the soon-to-be recreated viewgroup.
+        ViewGroup statusIcons = mIconController.getStatusIcons();
+        int nIcons = statusIcons != null ? statusIcons.getChildCount() : 0;
+        ArrayList<StatusBarIcon> icons = new ArrayList<StatusBarIcon>(nIcons);
+        ArrayList<String> iconSlots = new ArrayList<String>(nIcons);
+        for (int i = 0; i < nIcons; i++) {
+            StatusBarIconView iconView = (StatusBarIconView) statusIcons.getChildAt(i);
+            icons.add(iconView.getStatusBarIcon());
+            iconSlots.add(iconView.getStatusBarSlot());
+        }
+
+        removeAllViews(mStatusBarWindowContent);
+
+        // extract notifications.
+        RankingMap rankingMap = mNotificationData.getRankingMap();
+        int nNotifs = mNotificationData.size();
+        ArrayList<Pair<String, StatusBarNotification>> notifications = new ArrayList<>(nNotifs);
+        copyNotifications(notifications, mNotificationData);
+        // now remove all the notifications since we'll be re-creating these with the copied data
+        mNotificationData.clear();
+
+        makeStatusBarView();
+        repositionNavigationBar();
+
+        // recreate StatusBarIconViews.
+        for (int i = 0; i < nIcons; i++) {
+            StatusBarIcon icon = icons.get(i);
+            String slot = iconSlots.get(i);
+            addIcon(slot, i, i, icon);
+        }
+
+        // recreate notifications.
+        for (int i = 0; i < nNotifs; i++) {
+            Pair<String, StatusBarNotification> notifData = notifications.get(i);
+            addNotificationViews(createNotificationViews(notifData.second), rankingMap);
+        }
+        mNotificationData.filterAndSort();
+
+        setAreThereNotifications();
+
+        mStatusBarWindow.addContent(mStatusBarWindowContent);
+
+        checkBarModes();
+
+        // Stop the command queue until the new status bar container settles and has a layout pass
+        mCommandQueue.pause();
+
+        // fix notification panel being shifted to the left by calling
+        // instantCollapseNotificationPanel()
+        instantCollapseNotificationPanel();
+
+        mStatusBarWindow.requestLayout();
+        mStatusBarWindow.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                mStatusBarWindow.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                mCommandQueue.resume();
+                mRecreating = false;
+            }
+        });
+        // restart the keyguard so it picks up the newly created ScrimController
+        startKeyguard();
+
+        // if the keyguard was showing while this change occurred we'll need to do some extra work
+        if (mState == StatusBarState.KEYGUARD) {
+            // this will make sure the keyguard is showing
+            showKeyguard();
+            // make sure to hide the notification icon area and system iconography
+            // to avoid overlap (CYNGNOS-2253)
+            mIconController.hideNotificationIconArea(false);
+            mIconController.hideSystemIconArea(false);
+        }
+    }
+
+    private void removeAllViews(ViewGroup parent) {
+        int N = parent.getChildCount();
+        for (int i = 0; i < N; i++) {
+            View child = parent.getChildAt(i);
+            if (child instanceof ViewGroup) {
+                removeAllViews((ViewGroup) child);
+            }
+        }
+        parent.removeAllViews();
     }
 
     /**
@@ -4194,7 +4343,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     }
 
     private void showBouncer() {
-        if (mState == StatusBarState.KEYGUARD || mState == StatusBarState.SHADE_LOCKED) {
+        if (!mRecreating &&
+                (mState == StatusBarState.KEYGUARD || mState == StatusBarState.SHADE_LOCKED)) {
             mWaitingForKeyguardExit = mStatusBarKeyguardViewManager.isShowing();
             mStatusBarKeyguardViewManager.dismiss();
         }
