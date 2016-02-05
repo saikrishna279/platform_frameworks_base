@@ -11,6 +11,10 @@
     <color name="notification_guts_text_color">#b2FFFFFF</color>
     <color name="notification_guts_btn_color">#FFFFFFFF</color>
 
+    <!-- SystemUI QS panel primary text color -->
+    <color name="system_qs_text_color">#FFFFFF</color>
+    <color name="qs_detail_button_white">#B3FFFFFF</color><!-- 70% white -->
+
     <!-- The color of the legacy notification background -->
     <color name="notification_legacy_background_color">@*android:color/material_grey_850</color>
     <!-- The color of the material notification background -->
