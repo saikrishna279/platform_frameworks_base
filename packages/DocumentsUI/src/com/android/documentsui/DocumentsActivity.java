@@ -1063,7 +1063,10 @@ public class DocumentsActivity extends BaseActivity {
 
                     // If we cut, delete the original file
                     if (!mIsCopy) {
+                        client = DocumentsApplication.acquireUnstableProviderOrThrow(
+                               resolver, doc.derivedUri.getAuthority());
                         DocumentsContract.deleteDocument(client, doc.derivedUri);
+                        ContentProviderClient.releaseQuietly(client);
                     }
 
                     count++;
