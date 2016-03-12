@@ -34,6 +34,9 @@ import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.view.View;
+import android.provider.Settings;
+import android.os.UserHandle;
+import android.database.ContentObserver;
 
 import com.android.internal.app.IBatteryStats;
 import com.android.keyguard.KeyguardUpdateMonitor;
@@ -74,12 +77,20 @@ public class KeyguardIndicationController {
     private int mChargingSpeed;
     private int mChargingCurrent;
     private String mMessageToShowOnScreenOn;
+    private boolean showChargerCurrent = false;
 
     public KeyguardIndicationController(Context context, KeyguardIndicationTextView textView,
                                         LockIcon lockIcon) {
         mContext = context;
         mTextView = textView;
         mLockIcon = lockIcon;
+
+
+	Handler mHandler = new Handler();
+        SettingsObserver mSettingsObserver = new SettingsObserver(mHandler);
+        mSettingsObserver.observe();
+
+	showChargerCurrent = Settings.System.getIntForUser(mContext.getContentResolver(), Settings.System.SHOW_CHARGING_MAH, 0, UserHandle.USER_CURRENT) == 1;
 
         Resources res = context.getResources();
         mSlowThreshold = res.getInteger(R.integer.config_chargingSlowlyThreshold);
@@ -215,12 +226,20 @@ public class KeyguardIndicationController {
                 break;
         }
 
+        String chargingCurrent = "";
+
+        if (mChargingCurrent != 0) {
+            chargingCurrent = "\n" + (mChargingCurrent / 1000) + "mA/h";
+        }
+
         if (hasChargingTime) {
             String chargingTimeFormatted = Formatter.formatShortElapsedTimeRoundingUpToMinutes(
                     mContext, chargingTimeRemaining);
-            return mContext.getResources().getString(chargingId, chargingTimeFormatted);
+            String chargingText = mContext.getResources().getString(chargingId, chargingTimeFormatted);
+            return chargingText + ((showChargerCurrent) ? chargingCurrent:"");
         } else {
-            return mContext.getResources().getString(chargingId);
+            String chargingText = mContext.getResources().getString(chargingId);
+            return chargingText + ((showChargerCurrent) ? chargingCurrent:"");
         }
     }
 
@@ -320,5 +339,20 @@ public class KeyguardIndicationController {
     public void setStatusBarKeyguardViewManager(
             StatusBarKeyguardViewManager statusBarKeyguardViewManager) {
         mStatusBarKeyguardViewManager = statusBarKeyguardViewManager;
+    }
+
+    private class SettingsObserver extends ContentObserver {
+    	SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+             mContext.getContentResolver().registerContentObserver(Settings.System.getUriFor(Settings.System.SHOW_CHARGING_MAH), false, this, UserHandle.USER_ALL);
+        }
+
+	@Override
+        public void onChange(boolean selfChange) {
+            showChargerCurrent = Settings.System.getIntForUser(mContext.getContentResolver(), Settings.System.SHOW_CHARGING_MAH, 0, UserHandle.USER_CURRENT) == 1;
+	}
     }
 }
