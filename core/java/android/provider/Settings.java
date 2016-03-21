@@ -3722,6 +3722,11 @@ public final class Settings {
         public static final String STATUSBAR_CLOCK_DATE_FORMAT = "statusbar_clock_date_format";
 
 
+       /**
+        * USB Data automatic unlock
+        */
+       public static final String USB_DATA_AUTO_UNLOCK = "usb_data_auto_unlock";
+
         /**
          * Whether to show the battery bar
          * @hide
