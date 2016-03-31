@@ -6212,6 +6212,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
             try {
                  ActivityManagerNative.getDefault().showBootMessage(pkg.applicationInfo,
+                curr, total, true);
                  } catch (RemoteException e) {
         }
         PackageParser.Package p = pkg;
