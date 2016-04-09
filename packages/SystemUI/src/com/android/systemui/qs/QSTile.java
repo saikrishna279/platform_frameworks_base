@@ -86,7 +86,7 @@ public abstract class QSTile<TState extends State> implements Listenable {
     }
 
     public boolean supportsDualTargets() {
-        return true;
+        return false;
     }
 
     public Host getHost() {

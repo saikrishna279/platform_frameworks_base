@@ -50,7 +50,7 @@ public class QSTileView extends ViewGroup {
 
     protected final Context mContext;
     private final View mIcon;
-    protected final View mDivider;
+    private final View mDivider;
     private final H mHandler = new H();
     private final int mIconSizePx;
     private final int mTileSpacingPx;
@@ -59,8 +59,8 @@ public class QSTileView extends ViewGroup {
     private final int mDualTileVerticalPaddingPx;
     private final View mTopBackgroundView;
 
-    protected TextView mLabel;
-    protected QSDualTileLabel mDualLabel;
+    private TextView mLabel;
+    private QSDualTileLabel mDualLabel;
     private boolean mDual;
     private OnClickListener mClickPrimary;
     private OnClickListener mClickSecondary;
@@ -121,7 +121,7 @@ public class QSTileView extends ViewGroup {
         }
     }
 
-    protected void recreateLabel() {
+    private void recreateLabel() {
         CharSequence labelText = null;
         CharSequence labelDescription = null;
         if (mLabel != null) {
@@ -131,6 +131,7 @@ public class QSTileView extends ViewGroup {
         }
         if (mDualLabel != null) {
             labelText = mDualLabel.getText();
+            labelDescription = mLabel.getContentDescription();
             removeView(mDualLabel);
             mDualLabel = null;
         }
@@ -230,10 +231,6 @@ public class QSTileView extends ViewGroup {
         final Drawable d = ta.getDrawable(0);
         ta.recycle();
         return d;
-    }
-
-    public boolean isDual() {
-        return mDual;
     }
 
     private View labelView() {

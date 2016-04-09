@@ -21,10 +21,7 @@ import android.app.Fragment;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.PorterDuff.Mode;
 import android.os.Bundle;
-import android.os.UserHandle;
-import android.provider.Settings;
 import android.provider.Settings.Secure;
 import android.text.TextUtils;
 import android.util.Log;
@@ -41,7 +38,6 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.ScrollView;
 
 import com.android.internal.logging.MetricsLogger;
@@ -56,7 +52,6 @@ import com.android.systemui.statusbar.phone.QSTileHost;
 import com.android.systemui.statusbar.policy.SecurityController;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class QsTuner extends Fragment implements Callback {
@@ -73,12 +68,6 @@ public class QsTuner extends Fragment implements Callback {
     private ScrollView mScrollRoot;
 
     private FrameLayout mAddTarget;
-
-    private View mSpacer;
-
-    public interface TopRowCallback {
-        void topRowChanged();
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -118,24 +107,14 @@ public class QsTuner extends Fragment implements Callback {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         mScrollRoot = (ScrollView) inflater.inflate(R.layout.tuner_qs, container, false);
-        mScrollRoot.setBackgroundColor(0xFFFAFAFA);
-
-        mSpacer = mScrollRoot.findViewById(R.id.spacer);
-        setupSpacer();
 
         mQsPanel = new DraggableQsPanel(getContext());
-        mQsPanel.setTopRowCallback(new TopRowCallback() {
-            @Override
-            public void topRowChanged() {
-                    updateSpacer();
-            }
-        });
-        mTileHost = new CustomHost(getContext(), mQsPanel);
+        mTileHost = new CustomHost(getContext());
         mTileHost.setCallback(this);
         mQsPanel.setTiles(mTileHost.getTiles());
         mQsPanel.setHost(mTileHost);
         mQsPanel.refreshAllTiles();
-        ((ViewGroup) mScrollRoot.findViewById(R.id.all_details)).addView(mQsPanel, 1);
+        ((ViewGroup) mScrollRoot.findViewById(R.id.all_details)).addView(mQsPanel, 0);
 
         mDropTarget = (FrameLayout) mScrollRoot.findViewById(R.id.remove_target);
         setupDropTarget();
@@ -150,32 +129,8 @@ public class QsTuner extends Fragment implements Callback {
         super.onDestroyView();
     }
 
-    private void setupSpacer() {
-        new DragHelper(mSpacer, new DropListener() {
-            @Override
-            public void onDrop(DraggableTile sourceTile) {
-                Settings.System.putIntForUser(getContext().getContentResolver(),
-                        "num_top_rows", 1, UserHandle.USER_CURRENT);
-                updateSpacer();
-                mTileHost.updateTiles(sourceTile.mSpec);
-            }
-        });
-        updateSpacer();
-    }
-
-    private void updateSpacer() {
-        int cols = Settings.System.getIntForUser(getContext().getContentResolver(),
-                    "num_top_rows", 2, UserHandle.USER_CURRENT);
-        Log.d("TEST", "cols=" + cols);
-        if (cols == 0) {
-            mSpacer.setVisibility(View.VISIBLE);
-        } else if (cols > 0) {
-            mSpacer.setVisibility(View.INVISIBLE);
-        }
-    }
-
     private void setupDropTarget() {
-        QSTileView tileView = new CustomTileView(getContext());
+        QSTileView tileView = new QSTileView(getContext());
         QSTile.State state = new QSTile.State();
         state.visible = true;
         state.icon = ResourceIcon.get(R.drawable.ic_delete);
@@ -185,14 +140,14 @@ public class QsTuner extends Fragment implements Callback {
         mDropTarget.setVisibility(View.GONE);
         new DragHelper(tileView, new DropListener() {
             @Override
-            public void onDrop(DraggableTile sourceTile) {
-                mTileHost.remove(sourceTile);
+            public void onDrop(String sourceText) {
+                mTileHost.remove(sourceText);
             }
         });
     }
 
     private void setupAddTarget() {
-        QSTileView tileView = new CustomTileView(getContext());
+        QSTileView tileView = new QSTileView(getContext());
         QSTile.State state = new QSTile.State();
         state.visible = true;
         state.icon = ResourceIcon.get(R.drawable.ic_add_circle_qs);
@@ -250,13 +205,9 @@ public class QsTuner extends Fragment implements Callback {
 
     private static class CustomHost extends QSTileHost {
 
-        DraggableQsPanel mPanel;
-
-        public CustomHost(Context context, DraggableQsPanel panel) {
+        public CustomHost(Context context) {
             super(context, null, null, null, null, null, null, null, null, null,
                     null, null, new BlankSecurityController());
-
-            mPanel = panel;
         }
 
         @Override
@@ -264,15 +215,10 @@ public class QsTuner extends Fragment implements Callback {
             return new DraggableTile(this, tileSpec);
         }
 
-        protected DraggableQsPanel getPanel() {
-            return mPanel;
-        }
-
         public void replace(String oldTile, String newTile) {
             if (oldTile.equals(newTile)) {
                 return;
             }
-
             MetricsLogger.action(getContext(), MetricsLogger.TUNER_QS_REORDER, oldTile + ","
                     + newTile);
             List<String> order = new ArrayList<>(mTileSpecs);
@@ -286,22 +232,10 @@ public class QsTuner extends Fragment implements Callback {
             setTiles(order);
         }
 
-        public void remove(DraggableTile tile) {
-            String spec = tile.mSpec;
-            MetricsLogger.action(getContext(), MetricsLogger.TUNER_QS_REMOVE, spec);
+        public void remove(String tile) {
+            MetricsLogger.action(getContext(), MetricsLogger.TUNER_QS_REMOVE, tile);
             List<String> tiles = new ArrayList<>(mTileSpecs);
-            tiles.remove(spec);
-            setTiles(tiles);
-        }
-
-        public void updateTiles(String newTile) {
-            replace(mTileSpecs.get(0), newTile);
-        }
-
-        public void add(String tile, int location) {
-            MetricsLogger.action(getContext(), MetricsLogger.TUNER_QS_ADD, tile);
-            List<String> tiles = new ArrayList<>(mTileSpecs);
-            tiles.add(location, tile);
+            tiles.remove(tile);
             setTiles(tiles);
         }
 
@@ -439,47 +373,6 @@ public class QsTuner extends Fragment implements Callback {
         }
     }
 
-    private static class CustomTileView extends QSTileView {
-
-        private int mTextColor;
-        private int mIconColor;
-        private int mDividerColor;
-
-        protected CustomTileView(Context context) {
-            super(context);
-
-            mIconColor = context.getResources().getColor(R.color.qs_edit_tile_icon_color);
-            mTextColor = context.getResources().getColor(R.color.qs_edit_tile_text_color);
-            mDividerColor = context.getResources().getColor(R.color.qs_edit_divider_color);
-
-            setColors();
-        }
-
-        @Override
-        protected void recreateLabel() {
-            super.recreateLabel();
-            setColors();
-        }
-
-        private void setColors() {
-            if (mDualLabel != null) {
-                mDualLabel.setTextColor(mTextColor);
-            }
-            if (mLabel != null) {
-                mLabel.setTextColor(mTextColor);
-            }
-            if (mDivider != null) {
-                mDivider.setBackgroundColor(mDividerColor);
-            }
-        }
-
-        @Override
-        protected void setIcon(ImageView iv, QSTile.State state) {
-            super.setIcon(iv, state);
-            iv.setColorFilter(mIconColor, Mode.MULTIPLY);
-        }
-    }
-
     private static class DraggableTile extends QSTile<QSTile.State>
             implements DropListener {
         private String mSpec;
@@ -493,13 +386,13 @@ public class QsTuner extends Fragment implements Callback {
 
         @Override
         public QSTileView createTileView(Context context) {
-            mView = new CustomTileView(context);
+            mView = super.createTileView(context);
             return mView;
         }
 
         @Override
         public boolean supportsDualTargets() {
-            return true;
+            return "wifi".equals(mSpec) || "bt".equals(mSpec);
         }
 
         @Override
@@ -567,8 +460,8 @@ public class QsTuner extends Fragment implements Callback {
         }
 
         @Override
-        public void onDrop(DraggableTile sourceTile) {
-            ((CustomHost) mHost).getPanel().replace(this, sourceTile);
+        public void onDrop(String sourceText) {
+            ((CustomHost) mHost).replace(mSpec, sourceText);
         }
 
     }
@@ -597,8 +490,8 @@ public class QsTuner extends Fragment implements Callback {
                     break;
                 case DragEvent.ACTION_DROP:
                     stopDrag();
-                    DraggableTile tile = (DraggableTile) event.getLocalState();
-                    mListener.onDrop(tile);
+                    String text = event.getClipData().getItemAt(0).getText().toString();
+                    mListener.onDrop(text);
                     break;
             }
             return true;
@@ -607,32 +500,13 @@ public class QsTuner extends Fragment implements Callback {
     }
 
     public interface DropListener {
-        void onDrop(DraggableTile sourceTile);
+        void onDrop(String sourceText);
     }
 
     private class DraggableQsPanel extends QSPanel implements OnTouchListener {
-
-        private TopRowCallback mCallback;
-
         public DraggableQsPanel(Context context) {
             super(context);
             mBrightnessView.setVisibility(View.GONE);
-        }
-
-        public void setTopRowCallback(TopRowCallback callback) {
-            mCallback = callback;
-        }
-
-        @Override
-        public void setTiles(Collection<QSTile<?>> tiles) {
-            super.setTiles(tiles);
-        }
-
-        @Override
-        protected int getRowTop(int row) {
-            row = (mTopColumns == 0) ? row - 1 : row;
-            if (row <= 0) return 0;
-            return mLargeCellHeight - mDualTileUnderlap + (row - 1) * mCellHeight;
         }
 
         @Override
@@ -649,52 +523,13 @@ public class QsTuner extends Fragment implements Callback {
             }
         }
 
-        public void replace(DraggableTile oldTile, DraggableTile newTile) {
-
-            int oldR = 0, newR = 0, oldC = 0, newC = 0;
-
-            for (TileRecord r : mRecords) {
-                if (r.tile == oldTile) {
-                    oldR = r.row;
-                    oldC = r.col;
-                } else if (r.tile == newTile) {
-                    newR = r.row;
-                    newC = r.col;
-                }
-            }
-
-            int newTopColumns = Settings.System.getIntForUser(getContext().getContentResolver(),
-                    "num_top_rows", 2, UserHandle.USER_CURRENT);
-
-            Log.d("TEST", "newR=" + newR + " : newC=" + newC + " : oldR=" + oldR + " : oldC=" + oldC);
-
-            if (newR == 0) {
-                if (newTopColumns > 0) {
-                    newTopColumns--;
-                }
-            }
-            if (oldR == 0) {
-                if (newTopColumns < 3) {
-                    newTopColumns++;
-                }
-            }
-
-            Settings.System.putIntForUser(getContext().getContentResolver(),
-                    "num_top_rows", newTopColumns, UserHandle.USER_CURRENT);
-
-            mCallback.topRowChanged();
-
-            ((CustomHost) mHost).replace(oldTile.mSpec, newTile.mSpec);
-        }
-
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    DraggableTile tile = (DraggableTile) v.getTag();
-                    String tileSpec = (String) tile.mSpec;
+                    String tileSpec = (String) ((DraggableTile) v.getTag()).mSpec;
                     ClipData data = ClipData.newPlainText(tileSpec, tileSpec);
-                    v.startDrag(data, new View.DragShadowBuilder(v), tile, 0);
+                    v.startDrag(data, new View.DragShadowBuilder(v), null, 0);
                     onStartDrag();
                     return true;
             }
