@@ -260,33 +260,34 @@ public interface MetricsConstants {
     public static final int TUNER_STATUS_BAR_DISABLE = 233;
     public static final int TUNER_DEMO_MODE_ENABLED = 234;
     public static final int TUNER_DEMO_MODE_ON = 235;
-    public static final int TUNER_BATTERY_PERCENTAGE = 236;
-    public static final int FUELGAUGE_INACTIVE_APPS = 237;
+    public static final int TUNER_DEMO_MODE = 236;
+    public static final int TUNER_BATTERY_PERCENTAGE = 237;
+    public static final int FUELGAUGE_INACTIVE_APPS = 238;
 
     // Power menu
-    public static final int POWER_MENU_SETTINGS = 238;
+    public static final int POWER_MENU_SETTINGS = 239;
 
     // Notifcation and battery settings
-    public static final int NOTIFICATION_LIGHT_SETTINGS = 239;
-    public static final int BATTERY_LIGHT_SETTINGS = 240;
+    public static final int NOTIFICATION_LIGHT_SETTINGS = 240;
+    public static final int BATTERY_LIGHT_SETTINGS = 241;
 
     // Rotation settings
-    public static final int ROTATION_SETTINGS = 241;
+    public static final int ROTATION_SETTINGS = 242;
 
     // Status bar settings
-    public static final int STATUS_BAR_SETTINGS = 242;
+    public static final int STATUS_BAR_SETTINGS = 243;
 
     // Additional settings
-    public static final int ADDITIONAL_SETTINGS = 243;
+    public static final int ADDITIONAL_SETTINGS = 244;
 
    // Navigation bar settings
-    public static final int NAV_BAR_SETTINGS = 244;
+    public static final int NAV_BAR_SETTINGS = 245;
    
    // Battery settings
-    public static final int BATTERY_SETTINGS = 245;
+    public static final int BATTERY_SETTINGS = 246;
    
    // Lockscreen settings
-    public static final int LOCK_SCREEN_SETTINGS = 246;
+    public static final int LOCK_SCREEN_SETTINGS = 247;
 
     // These constants must match those in the analytic pipeline, do not edit.
     // Add temporary values to the top of MetricsLogger instead.
