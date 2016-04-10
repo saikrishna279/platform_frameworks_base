@@ -6561,7 +6561,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 }
                 mBootMsgDialog.setProgress(info, current, total);
             }
-           theme = 6;
          });
     }
 
