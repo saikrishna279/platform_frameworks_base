@@ -289,6 +289,9 @@ public interface MetricsConstants {
    // Lockscreen settings
     public static final int LOCK_SCREEN_SETTINGS = 247;
 
+    // Notification drawer settings
+    public static final int NOTIFICATION_DRAWER_SETTINGS = 248;
+
     // These constants must match those in the analytic pipeline, do not edit.
     // Add temporary values to the top of MetricsLogger instead.
 
