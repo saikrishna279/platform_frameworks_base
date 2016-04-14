@@ -510,9 +510,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_CARRIER_LABEL_COLOR),
                     false, this, UserHandle.USER_ALL);    
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.ENABLE_TASK_MANAGER),
-                    false, this, UserHandle.USER_ALL);
         update();
         }
 
@@ -573,17 +570,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_CARRIER_LABEL_COLOR))) {
                 updateCarrierLabelColor();
-            } else if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.ENABLE_TASK_MANAGER))) {
-                    mShowTaskManager = Settings.System.getIntForUser(
-                            mContext.getContentResolver(),
-                            Settings.System.ENABLE_TASK_MANAGER,
-                            0, UserHandle.USER_CURRENT) == 1;
-                            recreateStatusBar();
-                            updateRowStates();
-                            updateSpeedbump();
-                            updateClearAll();
-                            updateEmptyShadeView();
              }
   	    update();
   	}

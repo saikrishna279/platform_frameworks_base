@@ -1024,6 +1024,8 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
                     Settings.System.STATUS_BAR_BATTERY_STYLE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_SHOW_BATTERY_PERCENT), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.ENABLE_TASK_MANAGER), false, this);
             update();
         }
 
@@ -1055,6 +1057,8 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
             }
 
             mShowBatteryTextExpanded = showExpandedBatteryPercentage;
+            mShowTaskManager = Settings.System.getIntForUser(resolver,
+                Settings.System.ENABLE_TASK_MANAGER, 0, currentUserId) == 1;
             updateVisibilities();
             requestCaptureValues();
         }
