@@ -351,9 +351,6 @@ public class QSTileHost implements QSTile.Host {
             mContext.getContentResolver().registerContentObserver(
                     Settings.Secure.getUriFor(Settings.Secure.QS_TILES),
                     false, this, mUserTracker.getCurrentUserId());
-            mContext.getContentResolver().registerContentObserver(
-                    Settings.Secure.getUriFor(Settings.Secure.QS_USE_MAIN_TILES),
-                    false, this, mUserTracker.getCurrentUserId());
             mRegistered = true;
         }
 
