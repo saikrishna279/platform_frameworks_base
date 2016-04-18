@@ -3691,6 +3691,12 @@ public final class Settings {
          */
         public static final String STATUSBAR_BATTERY_BAR_COLOR = "statusbar_battery_bar_color";
 
+         /**
+         * Whether hardware keys are enabled
+         * @hide
+         */
+        public static final String DISABLE_HARDWARE_KEYS = "disable_hardware_keys";
+
         /**
          * @hide
          */
