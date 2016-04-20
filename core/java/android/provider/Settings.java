@@ -6664,6 +6664,14 @@ public final class Settings {
          */
         public static final String QS_SHOW_BRIGHTNESS_SLIDER = "qs_show_brightness_slider";
 
+        /**
+         * Whether user has enabled floating mode for headsup.
+         * <p>
+         * Type: int (0 for false, 1 for true)
+         * @hide
+         */
+        public static final String FLOATING_HEADSUP = "floating_headsup";
+
         /** Whether to vibrate when quick settings tile is pressed.
          *
          * @hide
