@@ -3854,6 +3854,24 @@ public final class Settings {
         public static final String NOTIFICATION_PLAY_QUEUE = "notification_play_queue";
 
         /**
+         *  Weather to show the music visualizer on the lock screen
+         * @hide
+         */
+        public static final String LOCK_SCREEN_VISUALIZER_SHOW = "lock_screen_visualizer_show";
+
+        /**
+         *  Weather to use a custom color for the visualizer on the lock screen
+         * @hide
+         */
+        public static final String LOCK_SCREEN_VISUALIZER_USE_CUSTOM_COLOR = "lock_screen_visualizer_use_custom_color";
+
+        /**
+         *  Custom color of the visualizer on the lock screen
+         * @hide
+         */
+        public static final String LOCK_SCREEN_VISUALIZER_CUSTOM_COLOR = "lock_screen_visualizer_custom_color";
+
+        /** 
          * Boolean value whether to show the charging speed on the lockscreen
          * @hide
          */
