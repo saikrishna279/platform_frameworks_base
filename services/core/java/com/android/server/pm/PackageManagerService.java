@@ -10766,28 +10766,6 @@ public class PackageManagerService extends IPackageManager.Stub {
                 }
             }
 
-            // Check whether we're replacing an existing package that's
-            // installed on adopted storage.  If yes, override the new
-            // package location to match.
-            if (move == null && (installFlags & PackageManager.INSTALL_REPLACE_EXISTING) != 0) {
-                synchronized (mPackages) {
-                    PackageParser.Package pkg = mPackages.get(pkgLite.packageName);
-                    if (pkg != null && isExternalAdopted(pkg)) {
-                        // Check whether anything will actually change
-                        // so that we log only when a fixup was needed
-                        if (!((installFlags & PackageManager.INSTALL_INTERNAL) != 0
-                                && (installFlags & PackageManager.INSTALL_EXTERNAL) == 0
-                                && Objects.equals(volumeUuid, pkg.volumeUuid))) {
-                            installFlags |= PackageManager.INSTALL_INTERNAL;
-                            installFlags &= ~PackageManager.INSTALL_EXTERNAL;
-                            volumeUuid = pkg.volumeUuid;
-                            Slog.w(TAG, "Replacing package on adopted storage.  "
-                                    +"Updating new package destination to volumeUuid "+volumeUuid);
-                        }
-                    }
-                }
-            }
-
             final InstallArgs args = createInstallArgs(this);
             mArgs = args;
 
