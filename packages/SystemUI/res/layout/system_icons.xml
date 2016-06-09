@@ -37,7 +37,6 @@
         android:layout_height="18dp"
         android:layout_width="18dp"
         android:layout_marginBottom="@dimen/battery_margin_bottom"
-<<<<<<< HEAD
         android:layout_marginStart="@dimen/signal_cluster_battery_padding"
         android:visibility="gone"/>
 
@@ -49,8 +48,4 @@
         android:layout_marginBottom="@dimen/battery_margin_bottom"
         android:layout_marginStart="@dimen/signal_cluster_battery_padding"
         android:visibility="gone"/>
-
-=======
-        android:layout_marginStart="@dimen/signal_cluster_battery_padding"/>
->>>>>>> 7231ec6... SystemUI: Use VectorDrawables for rendering battery (SQUASH)
 </LinearLayout>
