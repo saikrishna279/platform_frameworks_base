@@ -148,6 +148,8 @@ public class StatusBarWindowView extends FrameLayout {
         insets.left = 0;
         super.fitSystemWindows(insets);
         return false;
+    }
+
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         mSettingsObserver.unobserve();
