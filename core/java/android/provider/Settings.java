@@ -3624,6 +3624,48 @@ public final class Settings {
         public static final String WIFI_AUTO_CONNECT_TYPE = "wifi_auto_connect_type";
 
         /**
+         * Navbar Button Color Switch
+         * @hide
+         */
+        public static final String NAVBAR_TINT_SWITCH = "navbar_tint_switch";
+
+         /**
+         * Navbar Button Color
+         * @hide
+         */
+        public static final String NAVBAR_BUTTON_COLOR= "navbar_button_color";
+
+        /**
+         * Size of Filled bars
+         * @hide
+         */
+        public static final String PULSE_FILLED_BLOCK_SIZE = "pulse_filled_block_size";
+
+         /**
+         * Size of Empty Spaces Between Horizontal Visualizer Bars
+         * @hide
+         */
+        public static final String PULSE_EMPTY_BLOCK_SIZE = "pulse_empty_block_size";
+
+         /**
+         * Pulse Fudge Factor
+         * @hide
+         */
+        public static final String PULSE_CUSTOM_FUDGE_FACTOR = "pulse_custom_fudge_factor";
+
+        /**
+         * Custom Pulse Widths
+         * @hide
+         */
+        public static final String PULSE_CUSTOM_DIMEN = "pulse_custom_dimen";
+
+        /**
+         * Custom Spacing Between Pulse Bars
+         * @hide
+         */
+        public static final String PULSE_CUSTOM_DIV = "pulse_custom_div";
+
+        /**
          * Show or hide clock
          * 0 - hide
          * 1 - show (default)
