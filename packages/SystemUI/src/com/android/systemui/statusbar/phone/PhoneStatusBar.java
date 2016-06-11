@@ -59,6 +59,7 @@ import android.media.session.MediaSession;
 import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
 import android.os.AsyncTask;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -461,6 +462,15 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.STATUS_BAR_BRIGHTNESS_CONTROL), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.SCREEN_BRIGHTNESS_MODE), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.PULSE_CUSTOM_DIMEN),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NAVBAR_TINT_SWITCH),
+                    false, this, UserHandle.USER_ALL);
+	    resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NAVBAR_BUTTON_COLOR),
+                    false, this, UserHandle.USER_ALL);
             update();
         }
 
@@ -479,7 +489,25 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mBrightnessControl = Settings.System.getInt(
                     resolver, Settings.System.STATUS_BAR_BRIGHTNESS_CONTROL, 0) == 1;
         }
-    }
+
+         @Override
+         public void onChange(boolean selfChange, Uri uri) {
+             super.onChange(selfChange, uri);
+
+             if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.PULSE_CUSTOM_DIMEN))) {
+		    mNavigationController.updateNavbarOverlay(getNavbarThemedResources());
+		    } else if (uri.equals(Settings.System.getUriFor(
+                Settings.System.NAVBAR_TINT_SWITCH))) {
+   	        mNavigationController.updateNavbarOverlay(getNavbarThemedResources());
+	        } else if (uri.equals(Settings.System.getUriFor(
+                Settings.System.NAVBAR_BUTTON_COLOR))) {
+   	        mNavigationController.updateNavbarOverlay(getNavbarThemedResources());
+
+             }
+  	    update();
+  	}
+     }
 
     private final Runnable mAddNavigationBar = new Runnable() {
         @Override
