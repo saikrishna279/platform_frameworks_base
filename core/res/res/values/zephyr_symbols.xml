@@ -96,9 +96,6 @@
   <java-symbol type="drawable" name="ic_shortcut_action_screenshot" />
   <java-symbol type="drawable" name="ic_shortcut_action_search" />
 
-  <!-- Hardware key rebinding -->
-  <java-symbol type="integer" name="config_deviceHardwareKeys" />
-
   <!-- Show battery fully charged notification -->
   <java-symbol type="bool" name="config_showBatteryFullyChargedNotification" />
   <java-symbol type="string" name="notify_battery_fully_charged_title" />

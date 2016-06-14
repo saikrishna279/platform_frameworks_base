@@ -23,9 +23,6 @@
          [CHAR LIMIT=4] -->
     <string name="status_bar_notification_info_overflow" translatable="false">\u221E</string>
 
-    <!-- Screenshot -->
-    <string name="shortcut_screenshot">Screenshot</string>
-
     <!-- Quick settings -->
     <string name="quick_settings_brightness_label">Brightness</string>
     <string name="quick_settings_heads_up_label">Heads up</string>
