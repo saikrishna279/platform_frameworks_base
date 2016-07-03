@@ -105,10 +105,6 @@
     <string name="systemui_tuner_statusbar_title">Statusbar Items</string>
     <string name="systemui_tuner_qs_title">Quick Settings</string>
 
-    <!-- Notification which notifies user flashlight is enabled -->
-    <string name="quick_settings_tile_flashlight_not_title">Flashlight is on</string>
-    <string name="quick_settings_tile_flashlight_not_summary">Tap to turn off</string>
-
     <!-- Screenrecord Notification Ticker -->
     <string name="screenrecord_notif_ticker">Screen is being recorded</string>
  
@@ -143,4 +139,6 @@
     <string name="action_save_success">Saved</string>
     <string name="action_save_fault">Saving was unsuccessful</string>
     <string name="action_edit">Edit</string>
+=======
+>>>>>>> parent of d5b0360... Hardware key custom rebinding (1/2)
 </resources>
