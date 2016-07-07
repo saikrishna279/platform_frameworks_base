@@ -151,7 +151,6 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
     private ImageView mBackgroundImage;
     private Drawable mCurrentBackground;
     private float mLastHeight;
-    private SettingsObserver mSettingsObserver;
     private UserInfoController mUserInfoController;
 
     public StatusBarHeaderView(Context context, AttributeSet attrs) {
