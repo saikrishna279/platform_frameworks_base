@@ -6705,6 +6705,18 @@ public final class Settings {
         public static final String PULSE_EMPTY_BLOCK_SIZE = "pulse_empty_block_size";
 
         /**
+         * Pulse Fudge Factor
+         * @hide
+         */
+        public static final String PULSE_SOLID_FUDGE_FACTOR = "pulse_solid_fudge_factor";
+
+        /**
+         * Pulse Lavamp Animation Speed
+         * @hide
+         */
+        public static final String LAVAMP_SOLID_SPEED = "lavamp_solid_speed";
+
+        /**
          * This are the settings to be backed up.
          *
          * NOTE: Settings are backed up and restored in the order they appear
