@@ -4037,13 +4037,6 @@ public final class Settings {
         public static final String TOAST_ICON = "toast_icon";
 
         /**
-         * Whether to attach a queue to media notifications.
-         * 0 = 0ff, 1 = on
-         * @hide
-         */
-        public static final String NOTIFICATION_PLAY_QUEUE = "notification_play_queue";
-
-        /**
          *  Weather to show the music visualizer on the lock screen
          * @hide
          */
