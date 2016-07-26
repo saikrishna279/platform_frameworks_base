@@ -1094,6 +1094,7 @@ public final class Call {
                 && !parcelableCall.getCannedSmsResponses().isEmpty()) {
             mCannedTextResponses =
                     Collections.unmodifiableList(parcelableCall.getCannedSmsResponses());
+            cannedTextResponsesChanged = true;
         }
 
         boolean videoCallChanged = parcelableCall.isVideoCallProviderChanged() &&
