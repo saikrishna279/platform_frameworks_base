@@ -15,6 +15,8 @@
  */
 package com.android.systemui.tuner;
 
+import static com.android.systemui.BatteryMeterView.SHOW_PERCENT_SETTING;
+
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
@@ -46,6 +48,8 @@ public class TunerFragment extends PreferenceFragment {
 
     private final SettingObserver mSettingObserver = new SettingObserver();
 
+    private SwitchPreference mBatteryPct;
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -57,6 +61,9 @@ public class TunerFragment extends PreferenceFragment {
     @Override
     public void onResume() {
         super.onResume();
+        updateBatteryPct();
+        getContext().getContentResolver().registerContentObserver(
+                System.getUriFor(SHOW_PERCENT_SETTING), false, mSettingObserver);
 
         registerPrefs(getPreferenceScreen());
         MetricsLogger.visibility(getContext(), MetricsLogger.TUNER, true);
@@ -107,6 +114,13 @@ public class TunerFragment extends PreferenceFragment {
         return super.onOptionsItemSelected(item);
     }
 
+    private void updateBatteryPct() {
+        mBatteryPct.setOnPreferenceChangeListener(null);
+        mBatteryPct.setChecked(System.getInt(getContext().getContentResolver(),
+                SHOW_PERCENT_SETTING, 0) != 0);
+        mBatteryPct.setOnPreferenceChangeListener(mBatteryPctChange);
+    }
+
     private final class SettingObserver extends ContentObserver {
         public SettingObserver() {
             super(new Handler());
@@ -115,6 +129,17 @@ public class TunerFragment extends PreferenceFragment {
         @Override
         public void onChange(boolean selfChange, Uri uri, int userId) {
             super.onChange(selfChange, uri, userId);
+            updateBatteryPct();
         }
     }
+
+    private final OnPreferenceChangeListener mBatteryPctChange = new OnPreferenceChangeListener() {
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object newValue) {
+            final boolean v = (Boolean) newValue;
+            MetricsLogger.action(getContext(), MetricsLogger.TUNER_BATTERY_PERCENTAGE, v);
+            System.putInt(getContext().getContentResolver(), SHOW_PERCENT_SETTING, v ? 1 : 0);
+            return true;
+        }
+    };
 }

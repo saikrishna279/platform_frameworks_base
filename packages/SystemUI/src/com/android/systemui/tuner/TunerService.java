@@ -132,6 +132,8 @@ public class TunerService extends SystemUI {
     }
 
     public void clearAll() {
+        // A couple special cases.
+        Settings.System.putString(mContentResolver, BatteryMeterView.SHOW_PERCENT_SETTING, null);
         for (String key : mTunableLookup.keySet()) {
             Settings.Secure.putString(mContentResolver, key, null);
         }
