@@ -170,6 +170,13 @@ public class BatteryMeterView extends View implements DemoMode,
         mLightModeFillColor = context.getColor(R.color.light_mode_icon_color_dual_tone_fill);
     }
 
+    private final Runnable mInvalidate = new Runnable() {
+        @Override
+        public void run() {
+            postInvalidate();
+        }
+    };
+
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
